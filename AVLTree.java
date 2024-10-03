@@ -30,11 +30,11 @@ import java.lang.Math;
  */
 
 class Node {
-        int value;                      // the node's value
-        int height;                     // height of node based on its [sub]trees
-        Node leftChild, rightChild;     // left and right subtrees
+        int value;
+        int height;
+        Node leftChild, rightChild;
 
-        public Node(int data) {         // parameterized constructor
+        public Node(int data) {
             value = data;
             height = 0;
             leftChild = rightChild = null;
@@ -67,10 +67,10 @@ class Node {
  */
 
 class LUC_AVLTree {
-    private Node rootNode;           // The root node of the AVL Tree
+    private Node rootNode;
 
-    public LUC_AVLTree()              { rootNode = null; }       // Constructor
-    public void removeAll()           { rootNode = null; }       // Make tree empty
+    public LUC_AVLTree()              { rootNode = null; }
+    public void removeAll()           { rootNode = null; }
     public boolean checkEmpty()       { if (rootNode == null) return true; else return false; }
     public void insert(int value)     { rootNode = insertElement(value, rootNode); }
     public void delete(int value)     { rootNode = deleteElement(value, rootNode); }
@@ -225,36 +225,17 @@ class LUC_AVLTree {
 
     private Node insertElement(int value, Node node) {
 
-        // Method is called recursively, if null, then create a
-        // new node as a leaf and return this newly created node.
         if (node == null) {
             node = new Node(value);
             return node;
         }
 
-        /*
-         * If the inserting 'value' is less than the current node's value, then 
-         * we are inserting to the LEFT of this node, else we are inserting to 
-         * the RIGHT of it.
-         *
-         * This AVL tree does not allow duplicates, so do nothing if one is 
-         * found. Normally, we should throw an error indicating the application 
-         * tried to insert a duplicate.
-         *
-         * Last, note that If a rotation occurred  during an insert in this 
-         * node's subtree, then we need to adjust this node's pointer to the 
-         * new top of that subtree.
-         */
         if (value < node.value) {
             node.leftChild = insertElement(value, node.leftChild);
             int bf = getBalanceFactor(node);
 
-            // Check bf of node to determine if a LL or LR Rotation is needed
             if (Math.abs(bf) > 1) {
 
-                // We need to re-balance, check if the 'value' was inserted to the
-                // left or right of this node's left child. This determines if 
-                // LL or LR is needed.
                 if (value < node.leftChild.value)
                     node = LLRotation(node);
                 else
@@ -262,29 +243,19 @@ class LUC_AVLTree {
             }
         } else if (value > node.value ) {
 
-            // Inserting to the right...
+
             node.rightChild = insertElement(value, node.rightChild);
             int bf = getBalanceFactor(node);
 
-            // Check bf and if a RR or RL Rotation is needed
+
             if (Math.abs(bf) > 1 ) {
-                // Re-balance needed, check if inserted to the right or 
-                // left of child.
                 if (value > node.rightChild.value)
                     node = RRRotation(node);
                 else
                     node = RLRotation(node);
             }
-        } else
-            ; // value is duplicate, do nothing.
+        } else;
 
-        /*
-         * Re-adjust current node's height, this will also be done for each 
-         * ancestor node (if one exists) as we return through recursion. If 
-         * one or more rotations occurred, then the node's height would have 
-         * changed. Doing so, will re-adjust the height of each ancestor node 
-         * through to the root.
-         */
       
         node.height = (getMaxHeight( getHeight(node.leftChild), getHeight(node.rightChild))) + 1;
 
@@ -367,60 +338,50 @@ class LUC_AVLTree {
             return null;
         }
 
-        // Step 1: Perform standard BST delete
+
         if (value < node.value) {
             node.leftChild = deleteElement(value, node.leftChild); // Traverse left subtree
         } else if (value > node.value) {
             node.rightChild = deleteElement(value, node.rightChild); // Traverse right subtree
         } else {
-            // Node to be deleted found
 
-            // Case 1: Node has no left child
             if (node.leftChild == null) {
-                return node.rightChild; // Return right child
+                return node.rightChild;
             }
 
             // Case 2: Node has no right child
             if (node.rightChild == null) {
-                return node.leftChild; // Return left child
+                return node.leftChild;
             }
 
-            // Case 3: Node has two children
-            // Find the inorder successor (smallest value in the right subtree)
+
             Node successor = minValueNode(node.rightChild);
-            node.value = successor.value; // Replace current node's value with successor's value
-            node.rightChild = deleteElement(successor.value, node.rightChild); // Delete successor
+            node.value = successor.value;
+            node.rightChild = deleteElement(successor.value, node.rightChild);
         }
 
-        // Step 2: Update height of the current node
+
         node.height = 1 + getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild));
 
-        // Step 3: Get the balance factor of this node
+
         int balance = getBalanceFactor(node);
 
-        // Step 4: If the node is unbalanced, perform rotations
-
-        // Left Left (LL) Case
         if (balance > 1 && getBalanceFactor(node.leftChild) >= 0) {
             return LLRotation(node);
         }
 
-        // Left Right (LR) Case
         if (balance > 1 && getBalanceFactor(node.leftChild) < 0) {
             return LRRotation(node);
         }
 
-        // Right Right (RR) Case
         if (balance < -1 && getBalanceFactor(node.rightChild) <= 0) {
             return RRRotation(node);
         }
 
-        // Right Left (RL) Case
         if (balance < -1 && getBalanceFactor(node.rightChild) > 0) {
             return RLRotation(node);
         }
 
-        // Return the (potentially) balanced node
         return node;
 
     }
