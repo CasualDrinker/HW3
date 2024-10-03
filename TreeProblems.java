@@ -26,8 +26,20 @@ public class TreeProblems {
     // This can be done numerous ways, but once such will only that
     // *several* lines of code. Hint: create two temporary TreeSets and utilize the
     // methods retainAll(), addAll(), and removeAll(). But in the end, get something to work.
+    Set<Integer> result = new TreeSet<>(setA);
 
-    return setA;
+    // Add all elements from setB to result
+    result.addAll(setB);
+
+    // Create a temporary set to hold the common elements
+    Set<Integer> common = new TreeSet<>(setA);
+    common.retainAll(setB); // Retain only elements present in both sets
+
+    // Remove common elements from result to get the symmetric difference
+    result.removeAll(common);
+
+    return result;
+
   }
 
 
@@ -41,8 +53,17 @@ public class TreeProblems {
   public static void removeEven(Map<Integer, String> treeMap) {
 
     // INSERT CODE HERE.
+    Iterator<Map.Entry<Integer, String>> iterator = treeMap.entrySet().iterator();
 
-    return;
+    // Iterate through the map entries
+    while (iterator.hasNext()) {
+      Map.Entry<Integer, String> entry = iterator.next();
+
+      // Check if the key is even
+      if (entry.getKey() % 2 == 0) {
+        iterator.remove(); // Remove the entry with an even key
+      }
+    }
   }
 
 
@@ -57,8 +78,7 @@ public class TreeProblems {
 
     // INSERT CODE HERE
 
-    return false;
-
+    return tree1.equals(tree2);
   }
 
 } // end treeProblems class

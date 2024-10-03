@@ -362,7 +362,67 @@ class LUC_AVLTree {
          * do many of the same things as this method.
          */
 
+        // Base case: If the node is null, return null
+        if (node == null) {
+            return null;
+        }
+
+        // Step 1: Perform standard BST delete
+        if (value < node.value) {
+            node.leftChild = deleteElement(value, node.leftChild); // Traverse left subtree
+        } else if (value > node.value) {
+            node.rightChild = deleteElement(value, node.rightChild); // Traverse right subtree
+        } else {
+            // Node to be deleted found
+
+            // Case 1: Node has no left child
+            if (node.leftChild == null) {
+                return node.rightChild; // Return right child
+            }
+
+            // Case 2: Node has no right child
+            if (node.rightChild == null) {
+                return node.leftChild; // Return left child
+            }
+
+            // Case 3: Node has two children
+            // Find the inorder successor (smallest value in the right subtree)
+            Node successor = minValueNode(node.rightChild);
+            node.value = successor.value; // Replace current node's value with successor's value
+            node.rightChild = deleteElement(successor.value, node.rightChild); // Delete successor
+        }
+
+        // Step 2: Update height of the current node
+        node.height = 1 + getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild));
+
+        // Step 3: Get the balance factor of this node
+        int balance = getBalanceFactor(node);
+
+        // Step 4: If the node is unbalanced, perform rotations
+
+        // Left Left (LL) Case
+        if (balance > 1 && getBalanceFactor(node.leftChild) >= 0) {
+            return LLRotation(node);
+        }
+
+        // Left Right (LR) Case
+        if (balance > 1 && getBalanceFactor(node.leftChild) < 0) {
+            return LRRotation(node);
+        }
+
+        // Right Right (RR) Case
+        if (balance < -1 && getBalanceFactor(node.rightChild) <= 0) {
+            return RRRotation(node);
+        }
+
+        // Right Left (RL) Case
+        if (balance < -1 && getBalanceFactor(node.rightChild) > 0) {
+            return RLRotation(node);
+        }
+
+        // Return the (potentially) balanced node
         return node;
+
     }
 
 
